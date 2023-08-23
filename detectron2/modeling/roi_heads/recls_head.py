@@ -43,13 +43,10 @@ def mask_recls_filter_loss(recls, pred_mask_logits, mask_features, instances, bo
         ).unsqueeze(1).to(device=pred_mask_logits.device)
 
         pred_masks_per_image = pred_mask_logits[index[-1]: index[-1] + len(instances_per_image)] > 0
-        # pred_masks_per_image = pred_masks_per_image[arange, instances_per_image.gt_classes]
 
-        # iou_mask = torch.sum((gt_visible_per_image * pred_masks_per_image) > 0, dim=(1, 2, 3)).float() / \
-        #            torch.sum((gt_visible_per_image + pred_masks_per_image) > 0, dim=(1, 2, 3)).float()
+
         recall_mask = torch.sum((gt_visible_per_image * pred_masks_per_image) > 0, dim=(1, 2, 3)).float() / \
                      torch.sum(gt_visible_per_image, dim=(1, 2, 3)).float()
-        # filter_inds = ((iou_box > box_ths) * (iou_mask > mask_ths)).nonzero()
         filter_inds = ((iou_box > box_ths) * (recall_mask > mask_ths)).nonzero()
 
         pred_classes = instances_per_image.gt_classes
@@ -71,7 +68,6 @@ def mask_recls_filter_loss(recls, pred_mask_logits, mask_features, instances, bo
     pred_classes = cat(pred_classes_lst, dim=0)
     gt_classes = cat(gt_classes_lst, dim=0)
 
-    # pre_logits = cat(pre_logits_lst, dim=0) if len(pre_logits) else []
     num = pred_attention_features.size(0) + gt_attention_features.size(0)
     loss = 0
     if pred_attention_features.size(0):
@@ -91,12 +87,6 @@ def mask_recls_filter_loss(recls, pred_mask_logits, mask_features, instances, bo
         storage.put_scalar("recls/cls_accuracy(gt)", acc)
 
         loss += (F.cross_entropy(repred_class_logits, gt_classes, reduction="sum") / num) * gt_weight
-    # if len(pre_logits):
-    #     pred_mask_classes = cat(pred_classes_lst, dim=0)
-    #     indices = torch.arange(pred_mask_classes.size(0))
-    #     repred_class_prob = F.softmax(repred_class_logits, dim=-1)[indices, pred_mask_classes]
-    #     pred_class_prob = F.softmax(pre_logits, dim=-1)[indices, pred_mask_classes]
-    #     loss += torch.mean(F.relu(pred_class_prob - repred_class_prob + 0.05, inplace=True))
     return loss
 
 
@@ -107,7 +97,6 @@ def mask_recls_adaptive_loss(recls, pred_mask_logits, mask_features, instances, 
     classes_lst = []
     feature_attention_lst = []
     weight_lst = []
-    # mode = recls.attention_mode
     if recls.attention_mode == "attention":
         attention_features = mask_features * F.avg_pool2d(pred_mask_logits.detach(), 2)
     elif recls.attention_mode == "mask":
@@ -115,18 +104,14 @@ def mask_recls_adaptive_loss(recls, pred_mask_logits, mask_features, instances, 
     # else:
     #     raise ValueError("Wrong mode")
     for instances_per_image in instances:
-        # arange = torch.arange(len(instances_per_image))
-        # iou_box = pairwise_iou(instances_per_image.proposal_boxes, instances_per_image.gt_boxes)[arange, arange]
+
 
         gt_visible_per_image = instances_per_image.gt_v_masks.crop_and_resize(
             instances_per_image.proposal_boxes.tensor, mask_side_len
         ).unsqueeze(1).to(device=pred_mask_logits.device)
 
         pred_masks_per_image = pred_mask_logits[index: index + len(instances_per_image)] > 0
-        # pred_masks_per_image = pred_masks_per_image[arange, instances_per_image.gt_classes]
 
-        # iou_mask = torch.sum((gt_visible_per_image * pred_masks_per_image) > 0, dim=(1, 2, 3)).float() / \
-        #            torch.sum((gt_visible_per_image + pred_masks_per_image) > 0, dim=(1, 2, 3)).float()
         iou_mask = torch.sum((gt_visible_per_image * pred_masks_per_image) > 0, dim=(1, 2, 3)).float() / \
                    torch.sum((gt_visible_per_image + pred_masks_per_image) > 0, dim=(1, 2, 3)).float()
         weight_lst.append(iou_mask)
