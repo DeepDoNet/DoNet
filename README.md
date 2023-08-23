@@ -7,10 +7,11 @@ This is the official pytorch implementation of DoNet, please refer the [paper](h
 ## Introduction
 ### Abstract
 Cell instance segmentation in cytology images has significant importance for biology analysis and cancer screening, while remains challenging due to 1) the extensive overlapping translucent cell clusters that cause the ambigu- ous boundaries, and 2) the confusion of mimics and debris as nuclei. In this work, we proposed a De-overlapping Network (DoNet) in a decompose-and-recombined strategy. A Dual-path Region Segmentation Module (DRM) explicitly decomposes the cell clusters into intersection and complement regions, followed by a Semantic Consistency-guided Recombination Module (CRM) for integration. To further introduce the containment relationship of the nucleus in the cytoplasm, we design a Mask-guided Region Proposal Strategy (MRP) that integrates the cell attention maps for inner-cell instance prediction. We validate the proposed approach on ISBI2014 and CPS datasets. Experiments show that our proposed DoNet significantly outperforms other state-of-the-art (SOTA) cell instance seg- mentation methods. 
-![](https://github.com/DeepDoNet/DoNet/blob/main/figure/F2_framework.png)
+![](https://github.com/DeepDoNet/DoNet/blob/master/figure/F2_framework.png)
+
 
 ### Visualization
-![](https://github.com/DeepDoNet/DoNet/blob/main/figure/F5_visualization.png)
+![](https://github.com/DeepDoNet/DoNet/blob/master/figure/F5_visualization.png)
 ### Results
 ISBI2014 dataset
 | Methods                | mAP | Dice | F1 | AJI |
