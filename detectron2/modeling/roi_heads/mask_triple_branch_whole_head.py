@@ -240,13 +240,6 @@ class TripleBranchWholeMaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
                 x = layer(x)
         for layer in self.conv_norm_relus:
             x = layer(x)
-        # TODO also return this x
-        # import matplotlib.pyplot as plt
-        # imgplot = plt.imshow(torch.Tensor.cpu(F.relu(self.deconv(x))[0][0]).detach().numpy(),  cmap = 'jet')
-        # plt.colorbar()
-        # plt.savefig("/home/jh/zrs_ORCNN/whole_feature.svg")
-        # plt.savefig("/home/jh/zrs_ORCNN/whole_feature.png")
-        # plt.close()
         return self.predictor(F.relu(self.deconv(x))), x
 
     def forward(self, x, instances, guiding_layers):
