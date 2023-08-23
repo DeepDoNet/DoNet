@@ -211,13 +211,6 @@ class TripleBranchNonOverlappingMaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
     def layers(self, x):
         for layer in self.conv_norm_relus:
             x = layer(x)
-        # import matplotlib.pyplot as plt
-        # imgplot = plt.imshow(torch.Tensor.cpu(F.relu(self.deconv(x))[0][0]).detach().numpy(),  cmap = 'jet')
-        # plt.colorbar()
-        # plt.savefig("/home/jh/zrs_ORCNN/nonoverlapping_feature.svg")
-        # plt.savefig("/home/jh/zrs_ORCNN/nonoverlapping_feature.png")
-        # plt.close()
-        # TODO also return this x
         return self.predictor(F.relu(self.deconv(x))), x
 
     def forward(self, x, instances):
