@@ -46,17 +46,57 @@ See [INSTALL.md](INSTALL.md).
 
 ## QuickStart
 ### Inference and Visualization with Pre-trained Models (on ISBI)
-Use `customized_tools/inference.py` 
+Use `customized_tools/inference.py`
+```
+python inference.py 
+    --annTestFile <path to the test json file> 
+    --imgTestFile <path to the test image file> 
+    --configFile <path to the config file> 
+    --outputDir <path to the output directory>
+    --weightsFile <name of the weights file>
+```
 
 Download [ISBI pre-trained model](https://drive.google.com/file/d/1ORIWqIotRVK5YNc3r4p0NHcUsWYSYGgs/view?usp=drive_link)
 ### Evaluation with Pre-trained Models (on ISBI)
 Use `customized_tools/evaluate.py`
 **The evaluation code rely on a modified pycoco package that provides a new function `iouIntUni` to compute intersection over union between masks, return iou, intersection, union together. For installation of the modified pycoco package, please refer to https://github.com/Amandaynzhou/MMT-PSM**
+```
+python customized_tools/evaluate.py 
+    --annTestFile <path to the test json file> 
+    --imgTestFile <path to the test image file> 
+    --configFile <path to the config file> 
+    --outputDir <path to the output directory>
+    --weightsFile <name of the weights file>
+```
 
 ### Training on your own dataset
 Use `customized_tools/preprocess.py` to process your dataset.
-Then, pick a model in `customized_tools/trainings`.
-For details, see [customized_tools/trainings/README.md](README.md)
+```
+python customized_tools/preprocess.py 
+    --json_path <path to the original json file> 
+    --output_json_path <path to the output json file>
+```
+
+Use `customized_tools/train.py` to train your model.
+```
+python train.py 
+    --annTrainFile <path to the train json file>
+    --imgTrainFile <path to the train image file>
+    --annValFile <path to the validation json file> 
+    --imgValFile <path to the validation image file> 
+    --configFile <path to the config file> 
+    --outputDir <path to the output directory>
+```
+
+### Config Files
+<!-- table -->
+(Please refer to Table 3 in the paper)
+| model | config file |
+|-------|-------------|
+| Base  | COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml |
+| Base + DRM | COCO-InstanceSegmentation/mask_triple_branch_rcnn_R_50_FPN_3x_DRM.yaml |
+| Base + DRM + CRM | COCO-InstanceSegmentation/mask_triple_branch_rcnn_R_50_FPN_3x_DRM_CRM.yaml |
+| Base + DRM + CRM + MRP | COCO-InstanceSegmentation/mask_triple_branch_rcnn_R_50_FPN_3x_DRM_CRM_MRP.yaml |
 
 ## License
 

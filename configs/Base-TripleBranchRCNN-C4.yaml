@@ -1,0 +1,60 @@
+MODEL:
+  BUILDING_C4_or_C5: True
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  BACKBONE:
+    NAME: "build_resnet_fpn_backbone"
+  RESNETS:
+    OUT_FEATURES: ["res4"]
+  FPN:
+    IN_FEATURES: ["res4"]
+  ANCHOR_GENERATOR:
+    SIZES: [[128]]  # One size for each in feature map
+    ASPECT_RATIOS: [[0.5, 1.0, 2.0]]  # Three aspect ratios (same for all in feature maps)
+  RPN:
+    IN_FEATURES: ["p4"]
+    PRE_NMS_TOPK_TRAIN: 2000  # Per FPN level
+    PRE_NMS_TOPK_TEST: 1000  # Per FPN level
+    # Detectron1 uses 2000 proposals per-batch,
+    # (See "modeling/rpn/rpn_outputs.py" for details of this legacy issue)
+    # which is approximately 1000 proposals per-image since the default batch size for FPN is 2.
+    POST_NMS_TOPK_TRAIN: 1000
+    POST_NMS_TOPK_TEST: 1000
+  ROI_HEADS:
+    NAME: "TripleBranchROIHeads"
+    NUM_CLASSES: 2
+    BATCH_SIZE_PER_IMAGE: 256
+    IN_FEATURES: ["p4"]
+  SEM_SEG_HEAD:
+    IN_FEATURES: ["p4"]
+  RETINANET:
+    IN_FEATURES: ["p4"]
+  ROI_BOX_HEAD:
+    NAME: "FastRCNNConvFCHead"
+    NUM_FC: 2
+    POOLER_RESOLUTION: 7
+  ROI_MASK_HEAD:
+    NAME: "MaskRCNNConvUpsampleHead"
+    NUM_CONV: 4
+    POOLER_RESOLUTION: 14
+  ROI_TRIPLE_BRANCH_WHOLE_MASK_HEAD:
+    NAME: "TripleBranchWholeMaskRCNNConvUpsampleHead"
+    NUM_CONV: 4
+    POOLER_RESOLUTION: 14
+    CONSIS_LOSS: False
+    CONSIS_LOSS_MODE: "LN"
+  ROI_TRIPLE_BRANCH_OVERLAPPING_MASK_HEAD:
+    NAME: "TripleBranchOverlappingMaskRCNNConvUpsampleHead"
+    NUM_CONV: 4
+    POOLER_RESOLUTION: 14
+  ROI_TRIPLE_BRANCH_NONOVERLAPPING_MASK_HEAD:
+    NAME: "TripleBranchNonOverlappingMaskRCNNConvUpsampleHead"
+    NUM_CONV: 4
+    POOLER_RESOLUTION: 14
+SOLVER:
+  IMS_PER_BATCH: 2
+  BASE_LR: 0.005
+  STEPS: (1000, 1300)
+  MAX_ITER: 1500
+INPUT:
+  MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)
+VERSION: 2
